@@ -424,7 +424,7 @@
             reservationStatusDiv.innerHTML = `
                 <div class="loading-container">
                     <div class="loading-spinner"></div>
-                    <div class="loading-text">예약 정보를 불러오는 중...</div>
+                    <div class="loading-text">예약 정보를 불러오��� 중...</div>
                 </div>
             `;
 
@@ -517,6 +517,21 @@
                         if (category.includes('일반')) return 'category-general';
                         if (category.includes('스튜디오') || category.includes('랩') || category.includes('라운지')) return 'category-studio';
                         return 'category-general';
+                    }
+
+                    // Function to clean category display text
+                    function getCleanCategoryName(category) {
+                        // Remove weekday prefixes (월요일, 화요일, etc.)
+                        const weekdays = ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일'];
+                        let cleanCategory = category;
+
+                        weekdays.forEach(weekday => {
+                            if (cleanCategory.startsWith(weekday + ' ')) {
+                                cleanCategory = cleanCategory.substring(weekday.length + 1);
+                            }
+                        });
+
+                        return cleanCategory;
                     }
 
                     // Define the desired order of categories
