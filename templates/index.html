@@ -1,0 +1,336 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>연습실 예약 현황</title>
+    <style>
+        body {
+            font-family: 'SF Pro Text', 'SF Pro Display', 'SF Pro Icons', -apple-system, BlinkMacSystemFont, '맑은 고딕', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+            margin: 0;
+            padding: 40px;
+            background-color: #f5f5f7; /* Light gray, similar to Apple backgrounds */
+            color: #1d1d1f; /* Dark gray for text */
+            line-height: 1.6;
+        }
+        h1 {
+            font-size: 36px;
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: transparent;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: none;
+        }
+        .room-section {
+            margin-bottom: 30px;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: none; /* Lighter shadow for sections */
+            transition: transform 0.2s ease-in-out;
+            background-color: #ffffff; /* Set background to white */
+        }
+        .room-section:hover {
+            transform: translateY(-5px);
+        }
+        .general-practice-room-section {
+            background-color: #ffffff; /* Changed to white */
+        }
+        .studio-lab-lounge-section {
+            background-color: #ffffff; /* Changed to white */
+        }
+        .room-section h2 {
+            font-size: 24px;
+            font-weight: 500;
+            color: #30336b;
+            margin-top: 0;
+            margin-bottom: 20px;
+            display: flex; /* Use flexbox to align items */
+            align-items: center; /* Vertically center items */
+        }
+        .category-tag {
+            background-color: #e0e0e0; /* Light gray background */
+            color: #555; /* Darker text color */
+            padding: 2px 6px;
+            border-radius: 10px; /* Rounded corners */
+            font-size: 0.6em; /* Even smaller font size */
+            font-weight: normal;
+            margin-left: 8px; /* Space from room name */
+            position: relative;
+            top: 1px; /* Adjust vertical position */
+        }
+        .time-slot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 12px; /* Increased gap */
+        }
+        .time-slot {
+            background-color: #e0e0e0; /* Neutral gray for default slots */
+            padding: 12px;
+            text-align: center;
+            border-radius: 8px; /* More rounded corners */
+            font-size: 0.95em;
+            font-weight: 500;
+            color: #1d1d1f;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .time-slot.reserved {
+            background-color: rgb(255, 66, 69); /* Changed to specified RGB color */
+            color: white;
+            font-weight: bold;
+        }
+        .time-slot.available {
+            background-color: transparent;
+            color: #000000; /* Remains black */
+            border: 1px solid rgb(52, 199, 89); /* Reverted to 1px thickness */
+        }
+        #refreshButton {
+            background-color: #0171e3; /* Changed to specified blue */
+            color: white;
+            border: none;
+            border-radius: 20px; /* More rounded corners */
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: normal;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+            -webkit-appearance: none; /* For consistent styling across browsers */
+            -moz-appearance: none;
+            appearance: none;
+        }
+        #refreshButton:hover {
+            background-color: #005bb5; /* Darker blue on hover */
+            transform: translateY(-1px);
+        }
+        #refreshButton:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>연습실 예약 현황
+            <input type="date" id="reservationDate" style="margin-left: auto; padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
+            <select id="categorySelect" style="margin-left: 10px; padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
+                <option value="all">모든 카테고리</option>
+                <option value="일반 연습실">일반 연습실</option>
+                <option value="스튜디오/랩/라운지">스튜디오/랩/라운지</option>
+                <option value="드럼 연습실">드럼 연습실</option>
+            </select>
+            <button id="refreshButton" style="margin-left: 10px; padding: 5px 10px;">새로고침</button>
+        </h1>
+        <p style="font-size: 1.4em; color: #dd348f; margin-top: -40px; margin-bottom: 10px; font-weight: bold;">동아방송예술대학교</p>
+        <div id="reservation-status">로딩 중...</div>
+    </div>
+
+    <div class="full-width-section" style="background-color: #f0f0f0; padding: 40px; margin-top: 50px; text-align: left;">
+        <h2 style="font-size: 28px; font-weight: 600; color: #1d1d1f; margin-bottom: 20px;">왜 이 사이트를 만들었나요?</h2>
+        <p style="font-size: 1.1em; color: #333; line-height: 1.8; max-width: 800px; margin: 0;">
+            동아방송예술대학교 연습실 예약은 다음 카페를 통해 이루어지고 있습니다. 하지만 다음 카페의 예약 현황은 한눈에 파악하기 어렵고, 원하는 날짜와 카테고리의 정보를 찾기 번거롭습니다. 이 사이트는 이러한 불편함을 해소하고, 연습실 예약 현황을 더욱 직관적이고 편리하게 확인할 수 있도록 돕기 위해 만들어졌습니다.
+        </p>
+    </div>
+
+    <footer style="text-align: center; margin-top: 50px; font-size: 0.8em; color: #888;">
+        Copyright © 2025 이상민 All Rights Reserved.
+    </footer>
+
+    <script>
+        function fetchAndRenderReservations(selectedDate = null, selectedCategory = 'all') {
+            const reservationStatusDiv = document.getElementById('reservation-status');
+            reservationStatusDiv.innerHTML = '로딩 중...'; // Show loading message
+
+            let url = '/api/reservations';
+            const params = new URLSearchParams();
+            if (selectedDate) {
+                params.append('date', selectedDate);
+            }
+            if (selectedCategory !== 'all') {
+                params.append('category', selectedCategory);
+            }
+            if (params.toString()) {
+                url += `?${params.toString()}`;
+            }
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    reservationStatusDiv.innerHTML = ''; // Clear loading message
+
+                    if (data.length === 0) {
+                        reservationStatusDiv.innerHTML = '<p>오늘 날짜의 예약 정보가 없습니다.</p>';
+                        return;
+                    }
+
+                    // Group reservations by room name and expand multi-hour slots
+                    const reservationsByRoom = {};
+                    const expandedReservedSlots = {}; // To store individual 1-hour slots for each room
+
+                    data.forEach(reservation => {
+                        if (!reservationsByRoom[reservation.room_name]) {
+                            reservationsByRoom[reservation.room_name] = {
+                                category: reservation.category,
+                                reservations: []
+                            };
+                            expandedReservedSlots[reservation.room_name] = new Set();
+                        }
+                        reservationsByRoom[reservation.room_name].reservations.push(reservation);
+
+                        // Expand multi-hour time slots into individual 1-hour slots
+                        const [startHourStr, endHourStr] = reservation.reservation_time_slot.split('-');
+                        const startHour = parseInt(startHourStr);
+                        let endHour = parseInt(endHourStr);
+
+                        if (endHour === 0) { // If reservation ends at midnight (e.g., 23-00)
+                            endHour = 24;
+                        }
+
+                        if (startHour < endHour) { // Normal case: 10-12, 23-24 (23-00)
+                            for (let i = startHour; i < endHour; i++) {
+                                const slotStart = String(i).padStart(2, '0');
+                                const slotEnd = String(i + 1).padStart(2, '0');
+                                expandedReservedSlots[reservation.room_name].add(`${slotStart}-${slotEnd}`);
+                            }
+                        } else { // Crosses midnight: 23-02, 22-01
+                            for (let i = startHour; i < 24; i++) { // Mark slots until end of current day
+                                const slotStart = String(i).padStart(2, '0');
+                                const slotEnd = String(i + 1).padStart(2, '0');
+                                expandedReservedSlots[reservation.room_name].add(`${slotStart}-${slotEnd}`);
+                            }
+                        }
+                    });
+
+                    // Define all possible time slots (e.g., 00-01, 01-02, ..., 23-24)
+                    const allTimeSlots = [];
+                    for (let i = 0; i < 24; i++) {
+                        const start = String(i).padStart(2, '0');
+                        const end = String(i + 1).padStart(2, '0');
+                        allTimeSlots.push(`${start}-${end}`);
+                    }
+
+                    // Function to get display name for rooms
+                    function getDisplayRoomName(roomName) {
+                        if (roomName.startsWith('컴라') && roomName.endsWith('번방')) {
+                            const roomNumber = roomName.replace('컴라', '').replace('번방', '');
+                            return `컴포지션 라운지 #${roomNumber}`;
+                        }
+                        // Add more rules for other room name patterns if needed
+                        return roomName; // Return original name if no rule matches
+                    }
+
+                    // Define the desired order of categories
+                    const categoryOrder = ['드럼 연습실', '일반 연습실', '스튜디오/랩/라운지'];
+
+                    // Get room names and sort them based on category order
+                    const sortedRoomNames = Object.keys(reservationsByRoom).sort((a, b) => {
+                        const categoryA = reservationsByRoom[a].category;
+                        const categoryB = reservationsByRoom[b].category;
+                        return categoryOrder.indexOf(categoryA) - categoryOrder.indexOf(categoryB);
+                    });
+
+                    for (const roomName of sortedRoomNames) {
+                        const roomData = reservationsByRoom[roomName];
+                        const roomSection = document.createElement('div');
+                        roomSection.classList.add('room-section');
+                        if (roomData.category === '일반 연습실') {
+                            roomSection.classList.add('general-practice-room-section');
+                        } else if (roomData.category === '스튜디오/랩/라운지') {
+                            roomSection.classList.add('studio-lab-lounge-section');
+                        }
+                        roomSection.innerHTML = `<h2>${getDisplayRoomName(roomName)} <span class="category-tag">${roomData.category}</span></h2><div class="time-slot-grid"></div>`;
+                        const timeSlotGrid = roomSection.querySelector('.time-slot-grid');
+
+                        const currentRoomExpandedSlots = expandedReservedSlots[roomName];
+
+                        allTimeSlots.forEach(slot => {
+                            const timeSlotDiv = document.createElement('div');
+                            timeSlotDiv.classList.add('time-slot');
+                            timeSlotDiv.textContent = slot;
+                            if (currentRoomExpandedSlots.has(slot)) {
+                                timeSlotDiv.classList.add('reserved');
+                                // Find the original reservation that covers this 1-hour slot
+                                const reservedInfo = roomData.reservations.find(r => {
+                                    const [rStart, rEnd] = r.reservation_time_slot.split('-').map(Number);
+                                    const [slotStart, slotEnd] = slot.split('-').map(Number);
+                                    return slotStart >= rStart && slotEnd <= rEnd;
+                                });
+                                if (reservedInfo) {
+                                    timeSlotDiv.title = `예약자: ${reservedInfo.student_name} (${reservedInfo.student_id}) - ${reservedInfo.reservation_time_slot}`;
+                                }
+                            } else {
+                                timeSlotDiv.classList.add('available');
+                            }
+                            timeSlotGrid.appendChild(timeSlotDiv);
+                        });
+                        reservationStatusDiv.appendChild(roomSection);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching reservations:', error);
+                    document.getElementById('reservation-status').innerHTML = '<p>예약 정보를 불러오는 데 실패했습니다.</p>';
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const reservationDateInput = document.getElementById('reservationDate');
+            const categorySelect = document.getElementById('categorySelect');
+
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            const todayStr = `${year}-${month}-${day}`;
+            reservationDateInput.value = todayStr; // Set default to today
+
+            function updateReservations() {
+                const selectedDate = reservationDateInput.value;
+                const selectedCategory = categorySelect.value;
+
+                // Call the backend to refresh data first
+                fetch(`/api/refresh_data?date=${selectedDate}&category=${selectedCategory}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Refresh initiated:', data);
+                        // After initiating refresh, fetch and render the updated reservations
+                        // Add a small delay to allow the scraping script to run
+                        setTimeout(() => fetchAndRenderReservations(selectedDate, selectedCategory), 500); 
+                    })
+                    .catch(error => {
+                        console.error('Error refreshing data:', error);
+                        alert('데이터 새로고침에 실패했습니다.');
+                    });
+            }
+
+            updateReservations(); // Initial load with today's date and default category
+
+            reservationDateInput.addEventListener('change', updateReservations);
+            categorySelect.addEventListener('change', updateReservations);
+
+            // Remove the separate refresh button listener as updateReservations now handles refresh
+            // document.getElementById('refreshButton').addEventListener('click', function() {
+            //     // Call the backend to refresh data
+            //     fetch(`/api/refresh_data?date=${reservationDateInput.value}&category=${categorySelect.value}`)
+            //         .then(response => response.json())
+            //         .then(data => {
+            //             console.log('Refresh initiated:', data);
+            //             // After initiating refresh, fetch and render the updated reservations
+            //             // Add a small delay to allow the scraping script to run
+            //             setTimeout(updateReservations, 500); 
+            //         })
+            //         .catch(error => {
+            //             console.error('Error refreshing data:', error);
+            //             alert('데이터 새로고침에 실패했습니다.');
+            //         });
+            // });
+        });
+    </script>
+</body>
+</html>
