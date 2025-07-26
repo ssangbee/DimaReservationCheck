@@ -383,7 +383,7 @@
                 <div class="title-container">
                     <div>
                         <h1 class="main-title">연습실 예약 현황</h1>
-                        <p class="subtitle">동아방송예술대학교</p>
+                        <p class="subtitle">동아���송예술대학교</p>
                     </div>
                     <div class="controls-container">
                         <input type="date" id="reservationDate" class="control-input">
@@ -513,9 +513,9 @@
 
                     // Function to get category badge class
                     function getCategoryBadgeClass(category) {
-                        if (category === '드럼 연습실') return 'category-drum';
-                        if (category === '일반 연습실') return 'category-general';
-                        if (category === '스튜디오/랩/라운지') return 'category-studio';
+                        if (category.includes('드럼')) return 'category-drum';
+                        if (category.includes('일반')) return 'category-general';
+                        if (category.includes('스튜디오') || category.includes('랩') || category.includes('라운지')) return 'category-studio';
                         return 'category-general';
                     }
 
