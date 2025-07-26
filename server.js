@@ -4,7 +4,7 @@ const path = require('path');
 const { spawn } = require('child_process');
 
 const app = express();
-const PORT = 8082;
+const PORT = 8085;
 const DATABASE_NAME = 'reservations.db';
 
 // Serve static files from templates directory
