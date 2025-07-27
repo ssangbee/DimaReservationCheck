@@ -564,9 +564,16 @@
 
             let url = '/api/reservations';
             const params = new URLSearchParams();
-            
+
             // Define weekdays array here so it's accessible throughout the function
             const weekdays = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+
+            // Helper function to get the day of the week for the previous day
+            function getPreviousDayOfWeek(dateString) {
+                const date = new Date(dateString);
+                date.setDate(date.getDate() - 1); // Go back one day
+                return weekdays[date.getDay()];
+            }
 
             if (selectedDate) {
                 params.append('date', selectedDate);
