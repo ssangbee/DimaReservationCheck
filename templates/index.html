@@ -707,9 +707,7 @@
                                     const [slotStart, slotEnd] = slot.split('-').map(Number);
                                     return slotStart >= rStart && slotEnd <= rEnd;
                                 });
-                                if (reservedInfo) {
-                                    timeSlot.title = `예약자: ${reservedInfo.student_name} (${reservedInfo.student_id}) - ${reservedInfo.reservation_time_slot}`;
-                                }
+                                timeSlot.title = '예약이 불가능합니다.';
                             } else {
                                 timeSlot.classList.add('available');
                                 timeSlot.title = '예약 가능한 시간입니다';
