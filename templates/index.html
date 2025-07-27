@@ -491,6 +491,27 @@
                 color: #0a84ff;
             }
         }
+
+        /* Custom Tooltip Styles */
+        .custom-tooltip {
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.85);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px; /* 툴팁 폰트 크기 */
+            line-height: 1.4;
+            white-space: nowrap;
+            z-index: 1000;
+            pointer-events: none; /* 툴팁이 마우스 이벤트를 가로채지 않도록 */
+            opacity: 0;
+            transition: opacity 0.2s ease-in-out;
+            transform: translateX(-50%); /* 중앙 정렬 */
+        }
+
+        .custom-tooltip.show {
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
@@ -707,10 +728,10 @@
                                     const [slotStart, slotEnd] = slot.split('-').map(Number);
                                     return slotStart >= rStart && slotEnd <= rEnd;
                                 });
-                                timeSlot.title = '예약이 불가능합니다.';
+                                timeSlot.dataset.tooltipText = '예약이 불가능합니다.';
                             } else {
                                 timeSlot.classList.add('available');
-                                timeSlot.title = '예약 가능한 시간입니다';
+                                timeSlot.dataset.tooltipText = '예약 가능한 시간입니다';
                             }
                             
                             timeGrid.appendChild(timeSlot);
@@ -765,6 +786,48 @@
 
             reservationDateInput.addEventListener('change', updateReservations);
             categorySelect.addEventListener('change', updateReservations);
+
+            // Custom Tooltip Logic
+            let currentTooltip = null;
+
+            document.addEventListener('mouseover', function(event) {
+                const target = event.target;
+                if (target.classList.contains('time-slot') && target.dataset.tooltipText) {
+                    if (currentTooltip) {
+                        currentTooltip.remove();
+                    }
+
+                    const tooltip = document.createElement('div');
+                    tooltip.className = 'custom-tooltip';
+                    tooltip.textContent = target.dataset.tooltipText;
+                    document.body.appendChild(tooltip);
+                    currentTooltip = tooltip;
+
+                    function positionTooltip() {
+                        const rect = target.getBoundingClientRect();
+                        tooltip.style.left = `${rect.left + rect.width / 2}px`;
+                        tooltip.style.top = `${rect.top - tooltip.offsetHeight - 8}px`; // 8px above the element
+                        tooltip.classList.add('show');
+                    }
+
+                    // Initial positioning
+                    positionTooltip();
+
+                    // Reposition on scroll/resize if needed (optional, for complex layouts)
+                    // window.addEventListener('scroll', positionTooltip);
+                    // window.addEventListener('resize', positionTooltip);
+                }
+            });
+
+            document.addEventListener('mouseout', function(event) {
+                const target = event.target;
+                if (target.classList.contains('time-slot') && currentTooltip) {
+                    currentTooltip.remove();
+                    currentTooltip = null;
+                    // window.removeEventListener('scroll', positionTooltip);
+                    // window.removeEventListener('resize', positionTooltip);
+                }
+            });
         });
     </script>
 </body>
