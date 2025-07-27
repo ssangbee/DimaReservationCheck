@@ -177,35 +177,36 @@ def scrape_and_store_reservations(target_date_str, target_category):
                                         conn.commit()
 
                                     # Part 2: Reservation on the next day from midnight
-                                    next_day_date = reservation_start_date + datetime.timedelta(days=1)
-                                    if next_day_date.strftime('%Y-%m-%d') == target_date_str or next_day_date.strftime('%Y-%m-%d') == prev_date_str:
-                                        extracted_data_part2 = {
-                                            "category": category,
-                                            "room_name": final_room_name, 
-                                            "student_id": student_id,
-                                            "student_name": student_name,
-                                            "reservation_date": next_day_date.strftime('%Y-%m-%d'),
-                                            "reservation_time_slot": f"00-{end_time_str}",
-                                            "original_title": title_text,
-                                            "crawled_at": current_crawl_time
-                                        }
-                                        all_extracted_data.append(extracted_data_part2)
-                                        cursor.execute('''
-                                            INSERT INTO reservations (
-                                                category, room_name, student_id, student_name, reservation_date, reservation_time_slot, original_title, crawled_at
-                                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                                        ''',
-                                        (
-                                            extracted_data_part2['category'],
-                                            extracted_data_part2['room_name'],
-                                            extracted_data_part2['student_id'],
-                                            extracted_data_part2['student_name'],
-                                            extracted_data_part2['reservation_date'],
-                                            extracted_data_part2['reservation_time_slot'],
-                                            extracted_data_part2['original_title'],
-                                            extracted_data_part2['crawled_at']
-                                        ))
-                                        conn.commit()
+                                    if end_hour > 0: # This is the new condition
+                                        next_day_date = reservation_start_date + datetime.timedelta(days=1)
+                                        if next_day_date.strftime('%Y-%m-%d') == target_date_str or next_day_date.strftime('%Y-%m-%d') == prev_date_str:
+                                            extracted_data_part2 = {
+                                                "category": category,
+                                                "room_name": final_room_name, 
+                                                "student_id": student_id,
+                                                "student_name": student_name,
+                                                "reservation_date": next_day_date.strftime('%Y-%m-%d'),
+                                                "reservation_time_slot": f"00-{end_time_str}",
+                                                "original_title": title_text,
+                                                "crawled_at": current_crawl_time
+                                            }
+                                            all_extracted_data.append(extracted_data_part2)
+                                            cursor.execute('''
+                                                INSERT INTO reservations (
+                                                    category, room_name, student_id, student_name, reservation_date, reservation_time_slot, original_title, crawled_at
+                                                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                                            ''',
+                                            (
+                                                extracted_data_part2['category'],
+                                                extracted_data_part2['room_name'],
+                                                extracted_data_part2['student_id'],
+                                                extracted_data_part2['student_name'],
+                                                extracted_data_part2['reservation_date'],
+                                                extracted_data_part2['reservation_time_slot'],
+                                                extracted_data_part2['original_title'],
+                                                extracted_data_part2['crawled_at']
+                                            ))
+                                            conn.commit()
                                 else: # Normal reservation within the same day
                                     if reservation_start_date.strftime('%Y-%m-%d') == target_date_str or reservation_start_date.strftime('%Y-%m-%d') == prev_date_str:
                                         extracted_data = {
