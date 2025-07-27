@@ -231,6 +231,17 @@
             transform: scale(1.02);
         }
 
+        .time-slot.day-mismatch {
+            background: #FFD700; /* Gold color for mismatch */
+            color: #1d1d1f;
+            border: 1px solid #FFA500;
+        }
+
+        .time-slot.day-mismatch:hover {
+            background: #FFC107;
+            transform: scale(1.02);
+        }
+
         .loading-container {
             display: flex;
             align-items: center;
@@ -349,82 +360,6 @@
             line-height: 1.47059;
         }
 
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .main-container {
-                padding: 20px 16px;
-            }
-
-            .header-section {
-                padding: 32px 24px;
-            }
-
-            .title-container {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 20px;
-            }
-
-            .controls-container {
-                width: 100%;
-                flex-direction: column;
-                gap: 12px;
-            }
-
-            .control-input, .refresh-button {
-                width: 100%;
-            }
-
-            .room-card {
-                padding: 24px;
-            }
-
-            .room-header {
-                margin-bottom: 20px;
-            }
-
-            .time-grid {
-                grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
-                gap: 6px;
-            }
-
-            .time-slot {
-                height: 44px;
-                font-size: 13px;
-            }
-
-            .main-title {
-                font-size: 28px;
-            }
-
-            .info-section {
-                padding: 32px 24px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .main-container {
-                padding: 16px 12px;
-            }
-
-            .header-section, .info-section {
-                padding: 24px 20px;
-            }
-
-            .room-card {
-                padding: 20px;
-            }
-
-            .time-grid {
-                grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
-            }
-
-            .time-slot {
-                height: 40px;
-                font-size: 12px;
-            }
-        }
-
         /* Dark mode support */
         @media (prefers-color-scheme: dark) {
             body {
@@ -490,36 +425,6 @@
             .info-list li::before {
                 color: #0a84ff;
             }
-        }
-
-        .light-red-text {
-            color: #FF6347; /* 연한 빨간색 (Tomato) */
-        }
-        @media (prefers-color-scheme: dark) {
-            .light-red-text {
-                color: #FF6347; /* 다크 모드에서도 동일하게 적용 */
-            }
-        }
-
-        /* Custom Tooltip Styles */
-        .custom-tooltip {
-            position: absolute;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: #fff;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 14px; /* 툴팁 폰트 크기 */
-            line-height: 1.4;
-            white-space: nowrap;
-            z-index: 1000;
-            pointer-events: none; /* 툴팁이 마우스 이벤트를 가로채지 않도록 */
-            opacity: 0;
-            transition: opacity 0.2s ease-in-out;
-            transform: translateX(-50%); /* 중앙 정렬 */
-        }
-
-        .custom-tooltip.show {
-            opacity: 1;
         }
     </style>
 </head>
@@ -593,6 +498,10 @@
 
             let url = '/api/reservations';
             const params = new URLSearchParams();
+            
+            // Define weekdays array here so it's accessible throughout the function
+            const weekdays = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+
             if (selectedDate) {
                 params.append('date', selectedDate);
             }
@@ -691,7 +600,6 @@
                     // Function to clean category display text
                     function getCleanCategoryName(category) {
                         // Remove weekday prefixes (월요일, 화요일, etc.)
-                        const weekdays = ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일'];
                         let cleanCategory = category;
                         
                         weekdays.forEach(weekday => {
@@ -744,7 +652,20 @@
                                     const [slotStart, slotEnd] = slot.split('-').map(Number);
                                     return slotStart >= rStart && slotEnd <= rEnd;
                                 });
-                                timeSlot.dataset.tooltipText = '예약이 불가능합니다.';
+
+                                // Calculate actual day of week for the reservation date
+                                const reservationDate = new Date(reservedInfo.reservation_date);
+                                const actualDayOfWeek = weekdays[reservationDate.getDay()];
+
+                                // Check for day of week mismatch
+                                const isDayOfWeekMismatch = reservedInfo.crawled_day_of_week && reservedInfo.crawled_day_of_week !== actualDayOfWeek;
+
+                                if (isDayOfWeekMismatch) {
+                                    timeSlot.classList.add('day-mismatch');
+                                    timeSlot.dataset.tooltipText = '예약이 불가능합니다. (요일 불일치)';
+                                } else {
+                                    timeSlot.dataset.tooltipText = '예약이 불가능합니다.';
+                                }
                             } else {
                                 timeSlot.classList.add('available');
                                 timeSlot.dataset.tooltipText = '예약 가능한 시간입니다';
