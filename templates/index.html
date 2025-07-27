@@ -136,12 +136,7 @@
         }
 
         .room-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
             margin-bottom: 24px;
-            flex-wrap: wrap;
-            gap: 12px;
         }
 
         .room-title {
@@ -481,7 +476,7 @@
             <div class="info-section">
                 <h2 class="info-title">왜 이 사이트를 만들었나요?</h2>
                 <p class="info-text">
-                    동아방송예술대학교 연습실 예약은 다음 카페를 통해 이루어지고 있습니다. 하지만 다음 카페의 예약 현황은 한눈에 파악하기 어렵고, 원하는 날짜와 카테고리의 정보를 찾기 번거롭습니다. 이 사이트는 이러한 불편함을 해소하고, 연습실 예약 현황을 더욱 직관적이고 편리하게 확인할 수 있도록 돕기 위해 만들어졌습니다.
+                    동아방송예술대학교 연습실 예약은 다음 카페를 통해 이루어지고 있습니다. 하지만 다음 카페의 예약 현황은 한눈에 파악하기 어렵고, 원하는 날짜와 카테고리의 정보�� 찾기 번거롭습니다. 이 사이트는 이러한 불편함을 해소하고, 연습실 예약 현황을 더욱 직관적이고 편리하게 확인할 수 있도록 돕기 위해 만들어졌습니다.
                 </p>
             </div>
 
@@ -497,7 +492,7 @@
             reservationStatusDiv.innerHTML = `
                 <div class="loading-container">
                     <div class="loading-spinner"></div>
-                    <div class="loading-text">예약 ��보를 불러오는 중...</div>
+                    <div class="loading-text">예약 정보를 불러오는 중...</div>
                 </div>
             `;
 
@@ -578,7 +573,7 @@
                     // Function to get display name for rooms
                     function getDisplayRoomName(roomName) {
                         if (roomName.startsWith('컴라') && roomName.endsWith('번방')) {
-                            const roomNumber = roomName.replace('컴���', '').replace('번방', '');
+                            const roomNumber = roomName.replace('컴라', '').replace('번방', '');
                             return `컴포지션 라운지 #${roomNumber}`;
                         }
                         return roomName;
