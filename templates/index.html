@@ -657,11 +657,9 @@
                                     if (reservation.reservation_time_slot.startsWith('00-')) {
                                         // This is a cross-midnight continuation. Compare with previous day's actual day of week.
                                         const previousDayActualDayOfWeek = getPreviousDayOfWeek(reservation.reservation_date);
-                                        console.log(`Room: ${roomName}, Date: ${reservation.reservation_date}, Slot: ${slot}, Crawled Day: ${reservation.crawled_day_of_week}, Previous Day Actual: ${previousDayActualDayOfWeek}`);
                                         isDayOfWeekMismatch = reservation.crawled_day_of_week !== previousDayActualDayOfWeek;
                                     } else {
                                         // Normal reservation. Compare with current day's actual day of week.
-                                        console.log(`Room: ${roomName}, Date: ${reservation.reservation_date}, Slot: ${slot}, Crawled Day: ${reservation.crawled_day_of_week}, Actual Day: ${actualDayOfWeek}`);
                                         isDayOfWeekMismatch = reservation.crawled_day_of_week !== actualDayOfWeek;
                                     }
                                 }
