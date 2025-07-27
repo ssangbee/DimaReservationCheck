@@ -91,9 +91,12 @@ def scrape_and_store_reservations(target_date_str, target_category):
     all_extracted_data = []
 
     # Dates to scrape: target date and the day before (for cross-midnight reservations)
+    # datetime.date.weekday() returns Monday as 0 and Sunday as 6
+    # So, the array should start with Monday
+    day_names_for_weekday = ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일']
     dates_to_scrape = {
-        target_date_str: ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일'][target_date.weekday()],
-        prev_date_str: ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일'][prev_date.weekday()]
+        target_date_str: day_names_for_weekday[target_date.weekday()],
+        prev_date_str: day_names_for_weekday[prev_date.weekday()]
     }
 
     categories_to_scrape = []
