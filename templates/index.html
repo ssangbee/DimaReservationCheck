@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>연습실 예약 현황</title>
+    <title>연습실 ���약 현황</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -86,6 +86,21 @@
             transition: all 0.15s ease;
             outline: none;
             min-width: 140px;
+        }
+
+        .control-input[type="date"] {
+            padding-right: 12px;
+        }
+
+        .control-input:not([type]) {
+            padding-right: 12px;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23999' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 8px center;
+            background-repeat: no-repeat;
+            background-size: 16px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
         }
 
         .control-input:focus {
