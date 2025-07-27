@@ -183,7 +183,7 @@ def scrape_and_store_reservations(target_date_str, target_category):
                                             extracted_data_part1['reservation_time_slot'],
                                             extracted_data_part1['original_title'],
                                             extracted_data_part1['crawled_at'],
-                                            current_day_of_week
+                                            current_day_of_week.strip()
                                         ))
                                         conn.commit()
 
@@ -216,7 +216,7 @@ def scrape_and_store_reservations(target_date_str, target_category):
                                                 extracted_data_part2['reservation_time_slot'],
                                                 extracted_data_part2['original_title'],
                                                 extracted_data_part2['crawled_at'],
-                                                current_day_of_week
+                                                current_day_of_week.strip()
                                             ))
                                             conn.commit()
                                 else: # Normal reservation within the same day
@@ -246,7 +246,7 @@ def scrape_and_store_reservations(target_date_str, target_category):
                                             extracted_data['reservation_time_slot'],
                                             extracted_data['original_title'],
                                             extracted_data['crawled_at'],
-                                            current_day_of_week
+                                            current_day_of_week.strip()
                                         ))
                                         conn.commit()
                             else:
