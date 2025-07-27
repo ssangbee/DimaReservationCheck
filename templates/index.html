@@ -840,61 +840,43 @@
 
             // Custom Tooltip Logic
             let currentTooltip = null;
-            let activeTimeSlot = null; // To keep track of the currently hovered time-slot
-
-            function updateTooltipPosition(event) {
-                if (currentTooltip) {
-                    // Position the tooltip relative to the mouse cursor
-                    // Add a small offset so the tooltip doesn't cover the cursor
-                    currentTooltip.style.left = `${event.clientX + 15}px`;
-                    currentTooltip.style.top = `${event.clientY + 15}px`;
-                    currentTooltip.classList.add('show');
-                }
-            }
 
             document.addEventListener('mouseover', function(event) {
                 const target = event.target;
                 if (target.classList.contains('time-slot') && target.dataset.tooltipText) {
-                    // If a tooltip is already active for a different element, remove it
-                    if (currentTooltip && activeTimeSlot !== target) {
+                    if (currentTooltip) {
                         currentTooltip.remove();
-                        currentTooltip = null;
-                        if (activeTimeSlot) {
-                            activeTimeSlot.removeEventListener('mousemove', updateTooltipPosition);
-                        }
                     }
 
-                    // If no tooltip is active for this element, create one
-                    if (!currentTooltip) {
-                        const tooltip = document.createElement('div');
-                        tooltip.className = 'custom-tooltip';
-                        tooltip.textContent = target.dataset.tooltipText;
-                        document.body.appendChild(tooltip);
-                        currentTooltip = tooltip;
-                        activeTimeSlot = target;
+                    const tooltip = document.createElement('div');
+                    tooltip.className = 'custom-tooltip';
+                    tooltip.textContent = target.dataset.tooltipText;
+                    document.body.appendChild(tooltip);
+                    currentTooltip = tooltip;
 
-                        // Initial positioning
-                        updateTooltipPosition(event);
-
-                        // Add mousemove listener to update position as mouse moves over the element
-                        activeTimeSlot.addEventListener('mousemove', updateTooltipPosition);
+                    function positionTooltip() {
+                        const rect = target.getBoundingClientRect();
+                        tooltip.style.left = `${rect.left + rect.width / 2}px`;
+                        tooltip.style.top = `${rect.top - tooltip.offsetHeight - 8}px`; // 8px above the element
+                        tooltip.classList.add('show');
                     }
+
+                    // Initial positioning
+                    positionTooltip();
+
+                    // Reposition on scroll/resize if needed (optional, for complex layouts)
+                    // window.addEventListener('scroll', positionTooltip);
+                    // window.addEventListener('resize', positionTooltip);
                 }
             });
 
             document.addEventListener('mouseout', function(event) {
                 const target = event.target;
-                // Check if the mouse is truly leaving the time-slot element
-                // and not just moving to a child element within it
                 if (target.classList.contains('time-slot') && currentTooltip) {
-                    if (!event.relatedTarget || !target.contains(event.relatedTarget)) {
-                        currentTooltip.remove();
-                        currentTooltip = null;
-                        if (activeTimeSlot) {
-                            activeTimeSlot.removeEventListener('mousemove', updateTooltipPosition);
-                        }
-                        activeTimeSlot = null;
-                    }
+                    currentTooltip.remove();
+                    currentTooltip = null;
+                    // window.removeEventListener('scroll', positionTooltip);
+                    // window.removeEventListener('resize', positionTooltip);
                 }
             });
         });
