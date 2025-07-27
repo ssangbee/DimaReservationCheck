@@ -491,36 +491,6 @@
                 color: #0a84ff;
             }
         }
-
-        .light-red-text {
-            color: #FF6347; /* 연한 빨간색 (Tomato) */
-        }
-        @media (prefers-color-scheme: dark) {
-            .light-red-text {
-                color: #FF6347; /* 다크 모드에서도 동일하게 적용 */
-            }
-        }
-
-        /* Custom Tooltip Styles */
-        .custom-tooltip {
-            position: absolute;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: #fff;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 14px; /* 툴팁 폰트 크기 */
-            line-height: 1.4;
-            white-space: nowrap;
-            z-index: 1000;
-            pointer-events: none; /* 툴팁이 마우스 이벤트를 가로채지 않도록 */
-            opacity: 0;
-            transition: opacity 0.2s ease-in-out;
-            transform: translateX(-50%); /* 중앙 정렬 */
-        }
-
-        .custom-tooltip.show {
-            opacity: 1;
-        }
     </style>
 </head>
 <body>
@@ -744,126 +714,24 @@
                                     const [slotStart, slotEnd] = slot.split('-').map(Number);
                                     return slotStart >= rStart && slotEnd <= rEnd;
                                 });
-                                timeSlot.dataset.tooltipText = '예약이 불가능합니다.';
-                            } else {
-                                timeSlot.classList.add('available');
-                                timeSlot.dataset.tooltipText = '예약 가능한 시간입니다';
-                            }
-                            
-                            timeGrid.appendChild(timeSlot);
-                        });
-                        
-                        reservationStatusDiv.appendChild(roomCard);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching reservations:', error);
-                    reservationStatusDiv.innerHTML = `
-                        <div class="empty-state">
-                            <div class="empty-state-icon">⚠️</div>
-                            <div class="empty-state-title">오류가 발생했습니다</div>
-                            <div class="empty-state-text">예약 정보를 불러오는 데 실패했습니다. 잠시 후 다시 시도해주세요.</div>
-                        </div>
-                    `;
-                });
-        }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const reservationDateInput = document.getElementById('reservationDate');
-            const categorySelect = document.getElementById('categorySelect');
+                                let isDayOfWeekMismatch = false;
+                                if (reservedInfo && reservedInfo.crawled_day_of_week) {
+                                    const reservationDate = new Date(reservedInfo.reservation_date);
+                                    const actualDayOfWeek = weekdays[reservationDate.getDay()];
 
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = String(today.getMonth() + 1).padStart(2, '0');
-            const day = String(today.getDate()).padStart(2, '0');
-            const todayStr = `${year}-${month}-${day}`;
-            reservationDateInput.value = todayStr;
+                                    if (reservedInfo.reservation_time_slot.startsWith('00-')) {
+                                        const previousDayActualDayOfWeek = getPreviousDayOfWeek(reservedInfo.reservation_date);
+                                        isDayOfWeekMismatch = reservedInfo.crawled_day_of_week !== previousDayActualDayOfWeek;
+                                    } else {
+                                        isDayOfWeekMismatch = reservedInfo.crawled_day_of_week !== actualDayOfWeek;
+                                    }
+                                }
 
-            function updateReservations() {
-                const selectedDate = reservationDateInput.value;
-                const selectedCategory = categorySelect.value;
-
-                // Call the backend to refresh data first
-                fetch(`/api/refresh_data?date=${selectedDate}&category=${selectedCategory}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('Refresh initiated:', data);
-                        // After initiating refresh, fetch and render the updated reservations
-                        setTimeout(() => fetchAndRenderReservations(selectedDate, selectedCategory), 500); 
-                    })
-                    .catch(error => {
-                        console.error('Error refreshing data:', error);
-                        // Still try to fetch existing data even if refresh fails
-                        fetchAndRenderReservations(selectedDate, selectedCategory);
-                    });
-            }
-
-            updateReservations();
-
-            reservationDateInput.addEventListener('change', updateReservations);
-            categorySelect.addEventListener('change', updateReservations);
-
-            // Custom Tooltip Logic
-            let currentTooltip = null;
-            let activeTimeSlot = null; // To keep track of the currently hovered time-slot
-
-            function updateTooltipPosition(event) {
-                if (currentTooltip) {
-                    // Position the tooltip relative to the document, considering scroll position
-                    const scrollX = window.scrollX || document.documentElement.scrollLeft;
-                    const scrollY = window.scrollY || document.documentElement.scrollTop;
-                    currentTooltip.style.left = `${event.clientX + scrollX + 15}px`;
-                    currentTooltip.style.top = `${event.clientY + scrollY + 15}px`;
-                    currentTooltip.classList.add('show');
-                }
-            }
-
-            document.addEventListener('mouseover', function(event) {
-                const target = event.target;
-                if (target.classList.contains('time-slot') && target.dataset.tooltipText) {
-                    // If a tooltip is already active for a different element, remove it
-                    if (currentTooltip && activeTimeSlot !== target) {
-                        currentTooltip.remove();
-                        currentTooltip = null;
-                        if (activeTimeSlot) {
-                            activeTimeSlot.removeEventListener('mousemove', updateTooltipPosition);
-                        }
-                    }
-
-                    // If no tooltip is active for this element, create one
-                    if (!currentTooltip) {
-                        const tooltip = document.createElement('div');
-                        tooltip.className = 'custom-tooltip';
-                        tooltip.textContent = target.dataset.tooltipText;
-                        document.body.appendChild(tooltip);
-                        currentTooltip = tooltip;
-                        activeTimeSlot = target;
-
-                        // Initial positioning
-                        updateTooltipPosition(event);
-
-                        // Add mousemove listener to update position as mouse moves over the element
-                        activeTimeSlot.addEventListener('mousemove', updateTooltipPosition);
-                    }
-                }
-            });
-
-            document.addEventListener('mouseout', function(event) {
-                const target = event.target;
-                // Check if the mouse is truly leaving the time-slot element
-                // and not just moving to a child element within it
-                if (target.classList.contains('time-slot') && currentTooltip) {
-                    if (!event.relatedTarget || !target.contains(event.relatedTarget)) {
-                        currentTooltip.remove();
-                        currentTooltip = null;
-                        if (activeTimeSlot) {
-                            activeTimeSlot.removeEventListener('mousemove', updateTooltipPosition);
-                        }
-                        activeTimeSlot = null;
-                    }
-                }
-            });
-        });
-    </script>
-</body>
+                                if (isDayOfWeekMismatch) {
+                                    timeSlot.classList.add('mismatch-day-of-week');
+                                    timeSlot.dataset.tooltipText = '예약이 불가능합니다. (요일 불일치)';
+                                } else {
+                                    timeSlot.dataset.tooltipText = '예약이 불가능합니다.';
+                                }
 </html>
