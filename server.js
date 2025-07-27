@@ -4,7 +4,7 @@ const path = require('path');
 const { spawn } = require('child_process');
 
 const app = express();
-const PORT = 8085;
+const PORT = process.env.PORT || 8085; // ✅ 수정: Render가 주는 PORT 환경변수 사용
 const DATABASE_NAME = 'reservations.db';
 
 // Serve static files from templates directory
@@ -45,9 +45,9 @@ app.get('/api/reservations', (req, res) => {
     const selectedCategory = req.query.category || 'all';
 
     const db = new sqlite3.Database(DATABASE_NAME);
-    
-    let query = `SELECT category, room_name, student_id, student_name, reservation_date, 
-                        reservation_time_slot, original_title, crawled_at 
+
+    let query = `SELECT category, room_name, student_id, student_name, reservation_date,
+                        reservation_time_slot, original_title, crawled_at
                  FROM reservations WHERE reservation_date = ?`;
     let params = [selectedDate];
 
@@ -79,7 +79,6 @@ app.get('/api/refresh_data', (req, res) => {
     if (selectedCategory) command.push(selectedCategory);
 
     // Note: This will fail if Python dependencies aren't available
-    // For now, just return a placeholder response
     console.log('Would run:', command.join(' '));
     res.json({ status: 'refresh started (placeholder - Python scraper not available)' });
 });
@@ -87,6 +86,7 @@ app.get('/api/refresh_data', (req, res) => {
 // Initialize database and start server
 initDB();
 
-app.listen(PORT, () => {
+// ✅ 수정: '0.0.0.0' 바인딩
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
