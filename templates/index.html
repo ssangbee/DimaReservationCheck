@@ -564,7 +564,7 @@
 
             let url = '/api/reservations';
             const params = new URLSearchParams();
-
+            
             // Define weekdays array here so it's accessible throughout the function
             const weekdays = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
 
@@ -632,12 +632,6 @@
 
                         if (startHour < endHour) {
                             for (let i = startHour; i < endHour; i++) {
-                                const slotStart = String(i).padStart(2, '0');
-                                const slotEnd = String(i + 1).padStart(2, '0');
-                                expandedReservedSlots[reservation.room_name].add(`${slotStart}-${slotEnd}`);
-                            }
-                        } else {
-                            for (let i = startHour; i < 24; i++) {
                                 const slotStart = String(i).padStart(2, '0');
                                 const slotEnd = String(i + 1).padStart(2, '0');
                                 expandedReservedSlots[reservation.room_name].add(`${slotStart}-${slotEnd}`);
@@ -731,7 +725,16 @@
                                 const actualDayOfWeek = weekdays[reservationDate.getDay()];
 
                                 // Check for day of week mismatch
-                                const isDayOfWeekMismatch = reservedInfo.crawled_day_of_week && reservedInfo.crawled_day_of_week !== actualDayOfWeek;
+                                let isDayOfWeekMismatch = reservedInfo.crawled_day_of_week && reservedInfo.crawled_day_of_week !== actualDayOfWeek;
+
+                                // Exception for cross-midnight reservations: if the slot starts at 00- and the crawled day of week
+                                // matches the previous day's actual day of week, it's not a mismatch.
+                                if (slot.startsWith('00-')) {
+                                    const previousDayActualDayOfWeek = weekdays[new Date(reservedInfo.reservation_date).getDay() - 1]; // Get previous day's actual day
+                                    if (reservedInfo.crawled_day_of_week === previousDayActualDayOfWeek) {
+                                        isDayOfWeekMismatch = false; // It's a valid cross-midnight continuation
+                                    }
+                                }
 
                                 if (isDayOfWeekMismatch) {
                                     timeSlot.classList.add('day-mismatch');
@@ -739,7 +742,6 @@
                                 } else {
                                     timeSlot.dataset.tooltipText = '예약이 불가능합니다.';
                                 }
-                                console.log(`DEBUG: Room: ${roomName}, Date: ${reservedInfo.reservation_date}, Slot: ${slot}, Crawled Day: ${reservedInfo.crawled_day_of_week}, Actual Day: ${actualDayOfWeek}, Previous Day Actual: ${getPreviousDayOfWeek(reservedInfo.reservation_date)}, isDayOfWeekMismatch: ${isDayOfWeekMismatch}`);
                             } else {
                                 timeSlot.classList.add('available');
                                 timeSlot.dataset.tooltipText = '예약 가능한 시간입니다';
