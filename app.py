@@ -53,8 +53,9 @@ def refresh_data():
     if selected_category:
         command.append(selected_category)
 
-    # Run the scraping script in the background
-    subprocess.run(command)
+    # Run the scraping script asynchronously and redirect output to app.log
+    with open('app.log', 'a') as f:
+        subprocess.Popen(command, stdout=f, stderr=f)
     return jsonify({"status": "refresh started"})
 
 if __name__ == '__main__':
