@@ -664,7 +664,7 @@
                                     }
                                 }
 
-                                if (isDayOfWeekMismatch) {
+                                if (hasMismatch || isDayOfWeekMismatch) {
                             reservationsByRoom[reservation.room_name] = {
                                 category: reservation.category,
                                 reservations: []
