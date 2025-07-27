@@ -138,7 +138,7 @@ def scrape_and_store_reservations(target_date_str, target_category):
 
                             final_room_name = room_name_from_headcont if room_name_from_headcont else category
 
-                            match = re.search(r'^(\d+)/([^/]+)/(\d{1,2}\.\d{1,2})/(\d{2})-(\d{2})', title_text)
+                            match = re.search(r'^(\d+)/([^/]+)/(\d{1,2}\.\d{1,2})/(\d{2})[-~](\d{2})', title_text)
                             if match:
                                 student_id = match.group(1)
                                 student_name = match.group(2)
