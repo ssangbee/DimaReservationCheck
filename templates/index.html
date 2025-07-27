@@ -253,16 +253,6 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
         }
 
-        .loading-spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid #f2f2f7;
-            border-top: 3px solid #007aff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-right: 16px;
-        }
-
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -358,6 +348,82 @@
             color: #86868b;
             font-size: 17px;
             line-height: 1.47059;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 20px 16px;
+            }
+
+            .header-section {
+                padding: 32px 24px;
+            }
+
+            .title-container {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+
+            .controls-container {
+                width: 100%;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .control-input, .refresh-button {
+                width: 100%;
+            }
+
+            .room-card {
+                padding: 24px;
+            }
+
+            .room-header {
+                margin-bottom: 20px;
+            }
+
+            .time-grid {
+                grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
+                gap: 6px;
+            }
+
+            .time-slot {
+                height: 44px;
+                font-size: 13px;
+            }
+
+            .main-title {
+                font-size: 28px;
+            }
+
+            .info-section {
+                padding: 32px 24px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-container {
+                padding: 16px 12px;
+            }
+
+            .header-section, .info-section {
+                padding: 24px 20px;
+            }
+
+            .room-card {
+                padding: 20px;
+            }
+
+            .time-grid {
+                grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+            }
+
+            .time-slot {
+                height: 40px;
+                font-size: 12px;
+            }
         }
 
         /* Dark mode support */
@@ -559,12 +625,6 @@
 
                         if (startHour < endHour) {
                             for (let i = startHour; i < endHour; i++) {
-                                const slotStart = String(i).padStart(2, '0');
-                                const slotEnd = String(i + 1).padStart(2, '0');
-                                expandedReservedSlots[reservation.room_name].add(`${slotStart}-${slotEnd}`);
-                            }
-                        } else {
-                            for (let i = startHour; i < 24; i++) {
                                 const slotStart = String(i).padStart(2, '0');
                                 const slotEnd = String(i + 1).padStart(2, '0');
                                 expandedReservedSlots[reservation.room_name].add(`${slotStart}-${slotEnd}`);
