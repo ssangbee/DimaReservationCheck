@@ -497,7 +497,7 @@
             reservationStatusDiv.innerHTML = `
                 <div class="loading-container">
                     <div class="loading-spinner"></div>
-                    <div class="loading-text">예약 정보를 불러오는 중...</div>
+                    <div class="loading-text">예약 ��보를 불러오는 중...</div>
                 </div>
             `;
 
@@ -578,7 +578,7 @@
                     // Function to get display name for rooms
                     function getDisplayRoomName(roomName) {
                         if (roomName.startsWith('컴라') && roomName.endsWith('번방')) {
-                            const roomNumber = roomName.replace('컴라', '').replace('번방', '');
+                            const roomNumber = roomName.replace('컴���', '').replace('번방', '');
                             return `컴포지션 라운지 #${roomNumber}`;
                         }
                         return roomName;
@@ -627,8 +627,7 @@
                         
                         roomCard.innerHTML = `
                             <div class="room-header">
-                                <h2 class="room-title">${getDisplayRoomName(roomName)}</h2>
-                                <span class="category-badge ${categoryBadgeClass}">${cleanCategoryName}</span>
+                                <h2 class="room-title">${getDisplayRoomName(roomName)} <span class="category-badge ${categoryBadgeClass}">${cleanCategoryName}</span></h2>
                             </div>
                             <div class="time-grid"></div>
                         `;
