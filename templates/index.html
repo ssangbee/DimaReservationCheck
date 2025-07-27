@@ -732,6 +732,7 @@
                                 } else {
                                     timeSlot.dataset.tooltipText = '예약이 불가능합니다.';
                                 }
+                                console.log(`DEBUG: Room: ${roomName}, Date: ${reservedInfo.reservation_date}, Slot: ${slot}, Crawled Day: ${reservedInfo.crawled_day_of_week}, Actual Day: ${actualDayOfWeek}, Previous Day Actual: ${getPreviousDayOfWeek(reservedInfo.reservation_date)}, isDayOfWeekMismatch: ${isDayOfWeekMismatch}`);
                             } else {
                                 timeSlot.classList.add('available');
                                 timeSlot.dataset.tooltipText = '예약 가능한 시간입니다';
