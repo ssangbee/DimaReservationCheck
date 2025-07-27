@@ -604,6 +604,10 @@
 
             let url = '/api/reservations';
             const params = new URLSearchParams();
+
+            // Define weekdays array here so it's accessible throughout the function
+            const weekdays = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+
             if (selectedDate) {
                 params.append('date', selectedDate);
             }
@@ -710,7 +714,6 @@
                     // Function to clean category display text
                     function getCleanCategoryName(category) {
                         // Remove weekday prefixes (월요일, 화요일, etc.)
-                        const weekdays = ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일'];
                         let cleanCategory = category;
                         
                         weekdays.forEach(weekday => {
