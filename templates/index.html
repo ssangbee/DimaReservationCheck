@@ -644,8 +644,25 @@
                         const weekdays = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
                         const actualDayOfWeek = weekdays[reservationDate.getDay()];
 
+                        // Helper function to get the day of the week for the previous day
+                        function getPreviousDayOfWeek(dateString) {
+                            const date = new Date(dateString);
+                            date.setDate(date.getDate() - 1); // Go back one day
+                            return weekdays[date.getDay()];
+                        }
+
                         // Check for day of week mismatch
-                        const isDayOfWeekMismatch = reservation.crawled_day_of_week && reservation.crawled_day_of_week !== actualDayOfWeek;
+                        let isDayOfWeekMismatch = false;
+                        if (reservation.crawled_day_of_week) {
+                            if (reservation.reservation_time_slot.startsWith('00-')) {
+                                // This is a cross-midnight continuation. Compare with previous day's actual day of week.
+                                const previousDayActualDayOfWeek = getPreviousDayOfWeek(reservation.reservation_date);
+                                isDayOfWeekMismatch = reservation.crawled_day_of_week !== previousDayActualDayOfWeek;
+                            } else {
+                                // Normal reservation. Compare with current day's actual day of week.
+                                isDayOfWeekMismatch = reservation.crawled_day_of_week !== actualDayOfWeek;
+                            }
+                        }
 
                         if (!reservationsByRoom[reservation.room_name]) {
                             reservationsByRoom[reservation.room_name] = {
