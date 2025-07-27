@@ -37,6 +37,15 @@ URL_MAPPING = {
         "금요일": "https://m.cafe.daum.net/musicpop/ONMq?boardType=",
         "토요일": "https://m.cafe.daum.net/musicpop/ONMp?boardType=",
         "일요일": "https://m.cafe.daum.net/musicpop/ONMo?boardType=",
+    },
+    "합주실": {
+        "월요일": "https://m.cafe.daum.net/musicpop/Nr4e?boardType=",
+        "화요일": "https://m.cafe.daum.net/musicpop/Nr4d?boardType=",
+        "수요일": "https://m.cafe.daum.net/musicpop/Nr4c?boardType=",
+        "목요일": "https://m.cafe.daum.net/musicpop/Nr4b?boardType=",
+        "금요일": "https://m.cafe.daum.net/musicpop/Nr4a?boardType=",
+        "토요일": "https://m.cafe.daum.net/musicpop/Nr4Z?boardType=",
+        "일요일": "https://m.cafe.daum.net/musicpop/Nr4Y?boardType=",
     }
 }
 
