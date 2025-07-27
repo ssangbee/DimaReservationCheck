@@ -231,6 +231,17 @@
             transform: scale(1.02);
         }
 
+        .time-slot.mismatch-day-of-week {
+            background: #FFD700; /* Gold color for mismatch */
+            color: #1d1d1f;
+            border: 1px solid #FFA500;
+        }
+
+        .time-slot.mismatch-day-of-week:hover {
+            background: #FFC107;
+            transform: scale(1.02);
+        }
+
         .loading-container {
             display: flex;
             align-items: center;
@@ -624,6 +635,14 @@
                     const expandedReservedSlots = {};
 
                     data.forEach(reservation => {
+                        // Get the actual day of the week for the reservation date
+                        const reservationDate = new Date(reservation.reservation_date);
+                        const weekdays = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+                        const actualDayOfWeek = weekdays[reservationDate.getDay()];
+
+                        // Check for day of week mismatch
+                        const isDayOfWeekMismatch = reservation.crawled_day_of_week && reservation.crawled_day_of_week !== actualDayOfWeek;
+
                         if (!reservationsByRoom[reservation.room_name]) {
                             reservationsByRoom[reservation.room_name] = {
                                 category: reservation.category,
@@ -738,13 +757,19 @@
                             
                             if (currentRoomExpandedSlots.has(slot)) {
                                 timeSlot.classList.add('reserved');
-                                // Find the original reservation that covers this 1-hour slot
-                                const reservedInfo = roomData.reservations.find(r => {
-                                    const [rStart, rEnd] = r.reservation_time_slot.split('-').map(Number);
-                                    const [slotStart, slotEnd] = slot.split('-').map(Number);
-                                    return slotStart >= rStart && slotEnd <= rEnd;
+                                // Check if any reservation for this slot has a day of week mismatch
+                                const hasMismatch = roomData.reservations.some(r => {
+                                    const rDate = new Date(r.reservation_date);
+                                    const rActualDayOfWeek = weekdays[rDate.getDay()];
+                                    return r.crawled_day_of_week && r.crawled_day_of_week !== rActualDayOfWeek;
                                 });
-                                timeSlot.dataset.tooltipText = '예약이 불가능합니다.';
+
+                                if (hasMismatch) {
+                                    timeSlot.classList.add('mismatch-day-of-week');
+                                    timeSlot.dataset.tooltipText = '예약이 불가능합니다. (요일 불일치)';
+                                } else {
+                                    timeSlot.dataset.tooltipText = '예약이 불가능합니다.';
+                                }
                             } else {
                                 timeSlot.classList.add('available');
                                 timeSlot.dataset.tooltipText = '예약 가능한 시간입니다';

@@ -22,7 +22,7 @@ def get_reservations():
     selected_date_str = request.args.get('date', datetime.date.today().strftime('%Y-%m-%d'))
     selected_category = request.args.get('category', 'all')
 
-    query = 'SELECT category, room_name, student_id, student_name, reservation_date, reservation_time_slot, original_title, crawled_at FROM reservations WHERE reservation_date = ?'
+    query = 'SELECT category, room_name, student_id, student_name, reservation_date, reservation_time_slot, original_title, crawled_at, crawled_day_of_week FROM reservations WHERE reservation_date = ?'
     params = [selected_date_str]
 
     if selected_category != 'all':
