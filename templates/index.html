@@ -492,6 +492,15 @@
             }
         }
 
+        .light-red-text {
+            color: #FF6347; /* 연한 빨간색 (Tomato) */
+        }
+        @media (prefers-color-scheme: dark) {
+            .light-red-text {
+                color: #FF6347; /* 다크 모드에서도 동일하게 적용 */
+            }
+        }
+
         /* Custom Tooltip Styles */
         .custom-tooltip {
             position: absolute;
@@ -547,7 +556,7 @@
             <div class="info-section">
                 <h2 class="info-title">주의하세요!</h2>
                 <ul class="info-list">
-                    <li>현재 사이트는 베타 버전입니다. 예기치 못한 오류가 발생할 수 있습니다.</li>
+                    <li>현재 사이트는 <span class="light-red-text">베타 버전</span>입니다. 예기치 못한 오류가 발생할 수 있습니다.</li>
                     <li>예약 현황은 실시간으로 업데이트되지 않을 수 있습니다.</li>
                     <li>예약 후 다음 카페와 대조하여 이중확인하세요.</li>
                 </ul>
