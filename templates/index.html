@@ -844,11 +844,10 @@
 
             function updateTooltipPosition(event) {
                 if (currentTooltip) {
-                    // Position the tooltip relative to the document, considering scroll position
-                    const scrollX = window.scrollX || document.documentElement.scrollLeft;
-                    const scrollY = window.scrollY || document.documentElement.scrollTop;
-                    currentTooltip.style.left = `${event.clientX + scrollX + 15}px`;
-                    currentTooltip.style.top = `${event.clientY + scrollY + 15}px`;
+                    // Position the tooltip relative to the mouse cursor
+                    // Add a small offset so the tooltip doesn't cover the cursor
+                    currentTooltip.style.left = `${event.clientX + 15}px`;
+                    currentTooltip.style.top = `${event.clientY + 15}px`;
                     currentTooltip.classList.add('show');
                 }
             }
