@@ -53,10 +53,20 @@ def refresh_data():
     if selected_category:
         command.append(selected_category)
 
-    # Run the scraping script asynchronously and redirect output to app.log
-    with open('app.log', 'a') as f:
-        subprocess.Popen(command, stdout=f, stderr=f)
-    return jsonify({"status": "refresh started"})
+    # Run the scraping script synchronously and wait for it to complete.
+    try:
+        # Using subprocess.run makes this a blocking call.
+        # The API will not return until the script is finished.
+        result = subprocess.run(command, capture_output=True, text=True, check=True, timeout=300) # 5-minute timeout
+        with open('app.log', 'a') as f:
+            f.write(f"""Scrape for {selected_date} ({selected_category}) completed successfully.""" + '\n')
+            f.write(result.stdout + '\n')
+        return jsonify({"status": "refresh completed"})
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as e:
+        error_message = e.stderr if hasattr(e, 'stderr') else str(e)
+        with open('app.log', 'a') as f:
+            f.write(f"""Scrape for {selected_date} ({selected_category}) failed: {error_message}""" + '\n')
+        return jsonify({"status": "refresh failed", "error": error_message}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, port=8082)

@@ -231,13 +231,13 @@
             transform: scale(1.02);
         }
 
-        .time-slot.mismatch-day-of-week {
+        .time-slot.day-mismatch {
             background: #FFD700; /* Gold color for mismatch */
             color: #1d1d1f;
             border: 1px solid #FFA500;
         }
 
-        .time-slot.mismatch-day-of-week:hover {
+        .time-slot.day-mismatch:hover {
             background: #FFC107;
             transform: scale(1.02);
         }
@@ -251,16 +251,6 @@
             border-radius: 16px;
             margin: 20px 0;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-        }
-
-        .loading-spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid #f2f2f7;
-            border-top: 3px solid #007aff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-right: 16px;
         }
 
         @keyframes spin {
@@ -281,14 +271,24 @@
             margin: 48px 0 32px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
             border: 1px solid rgba(0, 0, 0, 0.04);
+            transition: padding 0.3s ease; /* Add transition for padding */
+        }
+
+        .info-section.is-collapsed {
+            padding-top: 15px; /* Reduced padding when collapsed */
+            padding-bottom: 15px; /* Reduced padding when collapsed */
         }
 
         .info-title {
             font-size: 28px;
             font-weight: 700;
             color: #1d1d1f;
-            margin-bottom: 20px;
+            margin: 0; /* Ensure no extra margin */
+            /* margin-bottom: 25px; */
             letter-spacing: -0.022em;
+            line-height: 1; /* Ensure consistent line height for vertical alignment */
+            display: flex;
+            align-items: center;
         }
 
         .info-text {
@@ -301,14 +301,14 @@
         .info-list {
             list-style: none;
             padding: 0;
-            margin-bottom: 20px;
+            margin-bottom: 25px; /* Increased margin-bottom */
         }
 
         .info-list li {
             font-size: 17px;
             color: #515154;
             line-height: 1.52947;
-            margin-bottom: 8px;
+            margin-bottom: 15px; /* Increased margin-bottom */
             position: relative;
             padding-left: 20px;
         }
@@ -319,6 +319,38 @@
             left: 0;
             color: #007aff;
             font-weight: bold;
+        }
+
+        .info-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .info-section.is-collapsed .info-header {
+            margin-bottom: 0; /* Remove bottom margin when collapsed */
+        }
+
+        .arrow-icon {
+            font-size: 28px;
+            transition: transform 0.3s ease;
+            line-height: 1; /* Ensure consistent line height for vertical alignment */
+        }
+
+        .arrow-icon.expanded {
+            transform: rotate(90deg);
+        }
+
+        .info-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .info-content.expanded {
+            max-height: 150px; /* Adjust as needed to fit content */
         }
 
         .footer {
@@ -358,6 +390,32 @@
             color: #86868b;
             font-size: 17px;
             line-height: 1.47059;
+        }
+
+        .error-section {
+            background: #ffebeb; /* Light red background for errors */
+            border-radius: 18px;
+            padding: 48px 40px;
+            margin-top: 32px; /* Space from the block above */
+            margin-bottom: 32px; /* Space from the block below */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(255, 0, 0, 0.2); /* Red border */
+            color: #cc0000; /* Dark red text */
+        }
+
+        .error-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #cc0000;
+            margin-bottom: 20px;
+            letter-spacing: -0.022em;
+        }
+
+        .error-text {
+            font-size: 17px;
+            color: #cc0000;
+            line-height: 1.52947;
+            max-width: 800px;
         }
 
         /* Responsive Design */
@@ -489,6 +547,15 @@
                 background: #3a3a3c;
             }
 
+            .time-slot.reserved {
+                background: rgb(255, 97, 101);
+                border: 1px solid rgb(255, 97, 101);
+            }
+
+            .time-slot.reserved:hover {
+                background: rgb(220, 80, 85);
+            }
+
             .footer {
                 background: #1c1c1e;
                 color: #98989d;
@@ -501,7 +568,28 @@
             .info-list li::before {
                 color: #0a84ff;
             }
-        }
+
+            /* Dark mode for error section */
+            .error-section {
+                background: #4d0000; /* Darker red for dark mode */
+                border-color: rgba(255, 0, 0, 0.4);
+                color: #ffcccc;
+            }
+            .error-title {
+                color: #ffcccc;
+            }
+            .error-text {
+                color: #ff9999;
+            }
+
+            .time-slot.reserved {
+                background: rgb(255, 97, 101);
+                border: 1px solid rgb(255, 97, 101);
+            }
+
+            .time-slot.reserved:hover {
+                background: rgb(220, 80, 85);
+            }
     </style>
 </head>
 <body>
@@ -520,12 +608,26 @@
                             <option value="일반 연습실">일반 연습실</option>
                             <option value="스튜디오/랩/라운지">스튜디오/랩/라운지</option>
                             <option value="드럼 연습실">드럼 연습실</option>
-                            <option value="합주실">합주실</option>
+                            <option value="합주실">합주실</n>
                         </select>
                         <button id="refreshButton" class="refresh-button">새로고침</button>
                     </div>
                 </div>
             </div>
+
+            <!-- 업데이트 및 공지사항 블록 시작 -->
+            <div class="info-section is-collapsed" id="error-info-section">
+                <div class="info-header">
+                    <h2 class="info-title">⚠️ <span style="margin-left: 5px;">현재 확인된 오류</span></h2>
+                    <span class="arrow-icon">▶</span>
+                </div>
+                <div class="info-content">
+                    <ul class="info-list">
+                        <li>노란색으로 표시된 시간대는 카페에 <span style="color: #DAA520;">게시판의 요일과 제목의 요일이 불일치하는 예약글</span>일 확률이 있다고 판단한 시간대입니다.<br>다만, 그 중 전날의 예약글이 다음날 자정을 넘어선 시간까지 예약한 글일 경우, 다음날 해당 시간대에 표시가 안되는 오류가 있습니다.<br><span style="color: #30d158;">정상적으로 예약한 글</span>인 경우 올바르게 표시되는 것으로 보입니다.</li>
+                    </ul>
+                </div>
+            </div>
+            <!-- 업데이트 및 공지사항 블록 끝 -->
 
             <div id="reservation-status" class="reservation-container">
                 <div class="loading-container">
@@ -579,6 +681,13 @@
             // Define weekdays array here so it's accessible throughout the function
             const weekdays = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
 
+            // Helper function to get the day of the week for the previous day
+            function getPreviousDayOfWeek(dateString) {
+                const date = new Date(dateString);
+                date.setDate(date.getDate() - 1); // Go back one day
+                return weekdays[date.getDay()];
+            }
+
             if (selectedDate) {
                 params.append('date', selectedDate);
             }
@@ -615,14 +724,6 @@
                     const expandedReservedSlots = {};
 
                     data.forEach(reservation => {
-                        // Get the actual day of the week for the reservation date
-                        const reservationDate = new Date(reservation.reservation_date);
-                        const weekdays = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
-                        const actualDayOfWeek = weekdays[reservationDate.getDay()];
-
-                        // Check for day of week mismatch
-                        const isDayOfWeekMismatch = reservation.crawled_day_of_week && reservation.crawled_day_of_week !== actualDayOfWeek;
-
                         if (!reservationsByRoom[reservation.room_name]) {
                             reservationsByRoom[reservation.room_name] = {
                                 category: reservation.category,
@@ -638,17 +739,17 @@
                         let endHour = parseInt(endHourStr);
 
                         if (endHour === 0) {
-                            endHour = 24;
+                            // If endHour is 0, it means 24:00 (midnight of the next day)
+                            // For a 00-00 slot, it should be treated as 00-01
+                            if (startHour === 0) { // This handles the 00-00 case
+                                endHour = 1;
+                            } else { // This handles cases like 23-00 (meaning 23-24)
+                                endHour = 24;
+                            }
                         }
 
                         if (startHour < endHour) {
                             for (let i = startHour; i < endHour; i++) {
-                                const slotStart = String(i).padStart(2, '0');
-                                const slotEnd = String(i + 1).padStart(2, '0');
-                                expandedReservedSlots[reservation.room_name].add(`${slotStart}-${slotEnd}`);
-                            }
-                        } else {
-                            for (let i = startHour; i < 24; i++) {
                                 const slotStart = String(i).padStart(2, '0');
                                 const slotEnd = String(i + 1).padStart(2, '0');
                                 expandedReservedSlots[reservation.room_name].add(`${slotStart}-${slotEnd}`);
@@ -685,13 +786,13 @@
                     function getCleanCategoryName(category) {
                         // Remove weekday prefixes (월요일, 화요일, etc.)
                         let cleanCategory = category;
-                        
+
                         weekdays.forEach(weekday => {
                             if (cleanCategory.startsWith(weekday + ' ')) {
                                 cleanCategory = cleanCategory.substring(weekday.length + 1);
                             }
                         });
-                        
+
                         return cleanCategory;
                     }
 
@@ -709,17 +810,17 @@
                         const roomData = reservationsByRoom[roomName];
                         const roomCard = document.createElement('div');
                         roomCard.className = 'room-card';
-                        
+
                         const categoryBadgeClass = getCategoryBadgeClass(roomData.category);
                         const cleanCategoryName = getCleanCategoryName(roomData.category);
-                        
+
                         roomCard.innerHTML = `
                             <div class="room-header">
                                 <h2 class="room-title">${getDisplayRoomName(roomName)} <span class="category-badge ${categoryBadgeClass}">${cleanCategoryName}</span></h2>
                             </div>
                             <div class="time-grid"></div>
                         `;
-                        
+
                         const timeGrid = roomCard.querySelector('.time-grid');
                         const currentRoomExpandedSlots = expandedReservedSlots[roomName];
 
@@ -727,33 +828,220 @@
                             const timeSlot = document.createElement('div');
                             timeSlot.className = 'time-slot';
                             timeSlot.textContent = slot;
-                            
+
                             if (currentRoomExpandedSlots.has(slot)) {
                                 timeSlot.classList.add('reserved');
                                 // Find the original reservation that covers this 1-hour slot
                                 const reservedInfo = roomData.reservations.find(r => {
-                                    const [rStart, rEnd] = r.reservation_time_slot.split('-').map(Number);
+                                    const [rStartStr, rEndStr] = r.reservation_time_slot.split('-');
+                                    let rStart = parseInt(rStartStr, 10);
+                                    let rEnd = parseInt(rEndStr, 10);
+                                    if (isNaN(rStart) || isNaN(rEnd)) return false;
+
+                                    // Handle edge cases for time parsing
+                                    if (rStart === 0 && rEnd === 0) rEnd = 1; // 00-00 is a 1-hour slot
+                                    else if (rEnd === 0) rEnd = 24; // 23-00 means 23-24
+
                                     const [slotStart, slotEnd] = slot.split('-').map(Number);
-                                    return slotStart >= rStart && slotEnd <= rEnd;
+
+                                    // This logic now correctly finds the parent reservation for a given slot,
+                                    // even for parts of a reservation that span across midnight.
+                                    if (r.reservation_date === selectedDate) {
+                                        return slotStart >= rStart && slotEnd <= rEnd;
+                                    }
+                                    return false;
                                 });
 
-                                let isDayOfWeekMismatch = false;
-                                if (reservedInfo && reservedInfo.crawled_day_of_week) {
+                                // This should always find an info if the slot is in `expandedReservedSlots`
+                                if (reservedInfo) {
                                     const reservationDate = new Date(reservedInfo.reservation_date);
                                     const actualDayOfWeek = weekdays[reservationDate.getDay()];
 
-                                    if (reservedInfo.reservation_time_slot.startsWith('00-')) {
-                                        const previousDayActualDayOfWeek = getPreviousDayOfWeek(reservedInfo.reservation_date);
-                                        isDayOfWeekMismatch = reservedInfo.crawled_day_of_week !== previousDayActualDayOfWeek;
-                                    } else {
-                                        isDayOfWeekMismatch = reservedInfo.crawled_day_of_week !== actualDayOfWeek;
-                                    }
-                                }
+                                    // 이전 날짜의 요일을 계산합니다.
+                                    const selectedDateObj = new Date(selectedDate);
+                                    const previousDay = new Date(selectedDateObj);
+                                    previousDay.setDate(selectedDateObj.getDate() - 1);
+                                    const previousDayOfWeek = weekdays[previousDay.getDay()];
 
-                                if (isDayOfWeekMismatch) {
-                                    timeSlot.classList.add('mismatch-day-of-week');
-                                    timeSlot.dataset.tooltipText = '예약이 불가능합니다. (요일 불일치)';
+                                    // 현재 처리 중인 시간 슬롯의 시작 시간을 가져옵니다. (예: "12-13" -> 12)
+                                    const slotStartHour = parseInt(slot.split('-')[0], 10);
+
+                                    // 기본적으로 게시판의 요일과 실제 예약 날짜의 요일이 다르면 불일치로 판단합니다.
+                                    let isDayOfWeekMismatch = reservedInfo.crawled_day_of_week &&
+                                                              reservedInfo.crawled_day_of_week !== actualDayOfWeek;
+
+                                    // **하지만, 예외적으로 아래의 경우는 정상으로 다시 변경합니다.**
+                                    // 1. 불일치(isDayOfWeekMismatch=true)로 판단되었고,
+                                    // 2. 예약 시간이 새벽 시간대(예: 6시 이전)이며,
+                                    // 3. 게시판 요일이 '전날 요일'과 일치하는 경우 (즉, 자정을 넘긴 정상 예약)
+                                    if (isDayOfWeekMismatch && slotStartHour < 6 && reservedInfo.crawled_day_of_week === previousDayOfWeek) {
+                                        isDayOfWeekMismatch = false; // 이것은 정상 예약이므로 불일치(노란색)가 아님
+                                    }
+                                    // --- FIX ENDS HERE ---
+
+                                    if (isDayOfWeekMismatch) {
+                                        timeSlot.classList.add('day-mismatch');
+                                        timeSlot.dataset.tooltipText = '예약이 불가능합니다. (요일 불일치)';
+                                    } else {
+                                        timeSlot.dataset.tooltipText = '예약이 불가능합니다.';
+                                    }
                                 } else {
-                                    timeSlot.dataset.tooltipText = '예약이 불가능합니다.';
+                                    // This case should ideally not be reached if logic is sound
+                                    timeSlot.dataset.tooltipText = '예약 정보 오류';
                                 }
+                            } else {
+                                timeSlot.classList.add('available');
+                                timeSlot.dataset.tooltipText = '예약 가능한 시간입니다';
+                            }
+
+                            timeGrid.appendChild(timeSlot);
+                        });
+
+                        reservationStatusDiv.appendChild(roomCard);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching reservations:', error);
+                    reservationStatusDiv.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">⚠️</div>
+                            <div class="empty-state-title">오류가 발생했습니다</div>
+                            <div class="empty-state-text">예약 정보를 불러오는 데 실패했습니다. 잠시 후 다시 시도해주세요.</div>
+                        </div>
+                    `;
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const reservationDateInput = document.getElementById('reservationDate');
+            const categorySelect = document.getElementById('categorySelect');
+
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            const todayStr = `${year}-${month}-${day}`;
+            reservationDateInput.value = todayStr;
+
+            function updateReservations() {
+                const selectedDate = reservationDateInput.value;
+                const selectedCategory = categorySelect.value;
+
+                // Show loading indicator immediately
+                const reservationStatusDiv = document.getElementById('reservation-status');
+                reservationStatusDiv.innerHTML = `
+                    <div class="loading-container">
+                        <div class="loading-spinner"></div>
+                        <div class="loading-text">새로운 정보를 불러오는 중...</div>
+                    </div>
+                `;
+
+                // Call the backend to refresh data first
+                fetch(`/api/refresh_data?date=${selectedDate}&category=${selectedCategory}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            // If the server returns an error (like 500), handle it
+                            throw new Error(`Server responded with ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Refresh completed:', data);
+                        // After the refresh is fully completed, fetch and render the updated reservations
+                        fetchAndRenderReservations(selectedDate, selectedCategory);
+                    })
+                    .catch(error => {
+                        console.error('Error refreshing data:', error);
+                        // Display an error message to the user
+                        reservationStatusDiv.innerHTML = `
+                            <div class="empty-state">
+                                <div class="empty-state-icon">⚠️</div>
+                                <div class="empty-state-title">데이터 새로고침 실패</div>
+                                <div class="empty-state-text">데이터를 새로고침하는 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.</div>
+                            </div>
+                        `;
+                    });
+            }
+
+            updateReservations();
+
+            reservationDateInput.addEventListener('change', updateReservations);
+            categorySelect.addEventListener('change', updateReservations);
+            document.getElementById('refreshButton').addEventListener('click', updateReservations);
+
+            // Custom Tooltip Logic
+            let currentTooltip = null;
+            let activeTimeSlot = null; // To keep track of the currently hovered time-slot
+
+            function updateTooltipPosition(event) {
+                if (currentTooltip) {
+                    // Position the tooltip relative to the document, considering scroll position
+                    const scrollX = window.scrollX || document.documentElement.scrollLeft;
+                    const scrollY = window.scrollY || document.documentElement.scrollTop;
+                    currentTooltip.style.left = `${event.clientX + scrollX + 15}px`;
+                    currentTooltip.style.top = `${event.clientY + scrollY + 15}px`;
+                    currentTooltip.classList.add('show');
+                }
+            }
+
+            document.addEventListener('mouseover', function(event) {
+                const target = event.target;
+                if (target.classList.contains('time-slot') && target.dataset.tooltipText) {
+                    // If a tooltip is already active for a different element, remove it
+                    if (currentTooltip && activeTimeSlot !== target) {
+                        currentTooltip.remove();
+                        currentTooltip = null;
+                        if (activeTimeSlot) {
+                            activeTimeSlot.removeEventListener('mousemove', updateTooltipPosition);
+                        }
+                    }
+
+                    // If no tooltip is active for this element, create one
+                    if (!currentTooltip) {
+                        const tooltip = document.createElement('div');
+                        tooltip.className = 'custom-tooltip';
+                        tooltip.textContent = target.dataset.tooltipText;
+                        document.body.appendChild(tooltip);
+                        currentTooltip = tooltip;
+                        activeTimeSlot = target;
+
+                        // Initial positioning
+                        updateTooltipPosition(event);
+
+                        // Add mousemove listener to update position as mouse moves over the element
+                        activeTimeSlot.addEventListener('mousemove', updateTooltipPosition);
+                    }
+                }
+            });
+
+            document.addEventListener('mouseout', function(event) {
+                const target = event.target;
+                // Check if the mouse is truly leaving the time-slot element
+                // and not just moving to a child element within it
+                if (target.classList.contains('time-slot') && currentTooltip) {
+                    if (!event.relatedTarget || !target.contains(event.relatedTarget)) {
+                        currentTooltip.remove();
+                        currentTooltip = null;
+                        if (activeTimeSlot) {
+                            activeTimeSlot.removeEventListener('mousemove', updateTooltipPosition);
+                        }
+                        activeTimeSlot = null;
+                    }
+                }
+            });
+
+            // Toggle functionality for "현재 확인된 오류" block
+            const errorSection = document.getElementById('error-info-section');
+            const errorHeader = errorSection.querySelector('.info-header');
+            const errorContent = errorSection.querySelector('.info-content');
+            const errorArrow = errorSection.querySelector('.arrow-icon');
+
+            errorHeader.addEventListener('click', () => {
+                errorContent.classList.toggle('expanded');
+                errorArrow.classList.toggle('expanded');
+                errorSection.classList.toggle('is-collapsed'); // Toggle is-collapsed class
+            });
+        });
+    </script>
+</body>
 </html>

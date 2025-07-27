@@ -136,7 +136,11 @@ def scrape_and_store_reservations(target_date_str, target_category):
                             title_text = title_match.group(1) if title_match else ""
                             room_name_from_headcont = head_cont_match.group(1) if head_cont_match else ""
 
-                            final_room_name = room_name_from_headcont if room_name_from_headcont else category
+                            # Standardize room name for "드럼 연습실"
+                            if category == "드럼 연습실" and not room_name_from_headcont:
+                                final_room_name = "드럼 연습실"
+                            else:
+                                final_room_name = room_name_from_headcont if room_name_from_headcont else category
 
                             match = re.search(r'^(\d+)/([^/]+)/(\d{1,2}\.\d{1,2})/(\d{2})-(\d{2})', title_text)
                             if match:
