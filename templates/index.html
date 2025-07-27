@@ -629,7 +629,13 @@
                         let endHour = parseInt(endHourStr);
 
                         if (endHour === 0) {
-                            endHour = 24;
+                            // If endHour is 0, it means 24:00 (midnight of the next day)
+                            // For a 00-00 slot, it should be treated as 00-01
+                            if (startHour === 0) { // This handles the 00-00 case
+                                endHour = 1;
+                            } else { // This handles cases like 23-00 (meaning 23-24)
+                                endHour = 24;
+                            }
                         }
 
                         if (startHour < endHour) {
