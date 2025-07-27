@@ -4,7 +4,7 @@ const path = require('path');
 const { spawn } = require('child_process');
 
 const app = express();
-const PORT = 8085;
+const PORT = process.env.PORT || 8085;
 const DATABASE_NAME = 'reservations.db';
 
 // Serve static files from templates directory
@@ -87,6 +87,6 @@ app.get('/api/refresh_data', (req, res) => {
 // Initialize database and start server
 initDB();
 
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on http://0.0.0.0:${PORT}`);
 });

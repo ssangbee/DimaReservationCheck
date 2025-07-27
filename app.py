@@ -3,6 +3,7 @@ from flask import Flask, jsonify, render_template, request
 import sqlite3
 import datetime
 import subprocess
+import os
 
 app = Flask(__name__)
 DATABASE_NAME = 'reservations.db'
@@ -69,4 +70,5 @@ def refresh_data():
         return jsonify({"status": "refresh failed", "error": error_message}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8082)
+    port = int(os.environ.get('PORT', 8082))
+    app.run(debug=True, host='0.0.0.0', port=port)
