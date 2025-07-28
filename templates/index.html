@@ -46,6 +46,7 @@
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 24px;
+            width: 100%;
         }
 
         .title-section {
@@ -73,6 +74,7 @@
             align-items: center;
             gap: 12px;
             flex-wrap: wrap;
+            width: 100%;
         }
 
         .control-input {
@@ -235,11 +237,7 @@
             background: #FFD700; /* Gold color for mismatch */
             color: #1d1d1f;
             border: 1px solid #FFA500;
-        }
-
-        .time-slot.day-mismatch:hover {
-            background: #FFC107;
-            transform: scale(1.02);
+            outline: none; /* ADDED: Remove outline */
         }
 
         .loading-container {
@@ -418,6 +416,10 @@
             max-width: 800px;
         }
 
+        .light-red-text {
+            color: #1d1d1f; /* Black-ish color for light mode */
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .main-container {
@@ -432,6 +434,7 @@
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 20px;
+                width: 100%;
             }
 
             .controls-container {
@@ -556,40 +559,20 @@
                 background: rgb(220, 80, 85);
             }
 
-            .footer {
-                background: #1c1c1e;
-                color: #98989d;
+            .light-red-text {
+                color: #f5f5f7; /* White-ish color for dark mode */
             }
-
-            .info-list li {
-                color: #a1a1a6;
-            }
-
-            .info-list li::before {
-                color: #0a84ff;
-            }
-
-            /* Dark mode for error section */
-            .error-section {
-                background: #4d0000; /* Darker red for dark mode */
-                border-color: rgba(255, 0, 0, 0.4);
-                color: #ffcccc;
-            }
-            .error-title {
-                color: #ffcccc;
-            }
-            .error-text {
-                color: #ff9999;
-            }
-
-            .time-slot.reserved {
-                background: rgb(255, 97, 101);
-                border: 1px solid rgb(255, 97, 101);
-            }
-
-            .time-slot.reserved:hover {
-                background: rgb(220, 80, 85);
-            }
+    /* ADDED FOR DARK MODE DAY-MISMATCH */
+    .time-slot.day-mismatch {
+        background: #DAA520; /* Darker Gold for mismatch in dark mode */
+        color: #1d1d1f; /* Dark text for contrast */
+        border: 1px solid #B8860B;
+        outline: none; /* 추가: 아웃라인 제거 */
+    }
+    .time-slot.day-mismatch:hover {
+        background: #C0901A;
+        transform: scale(1.02);
+    }
     </style>
 </head>
 <body>
@@ -598,7 +581,7 @@
             <div class="header-section">
                 <div class="title-container">
                     <div class="title-section">
-                        <h1 class="main-title">연습실 예약 현황</h1>
+                        <h1 class="main-title">실용음악학부 연습실 예약 현황</h1>
                         <p class="subtitle">동아방송예술대학교</p>
                     </div>
                     <div class="controls-container">
@@ -831,62 +814,46 @@
 
                             if (currentRoomExpandedSlots.has(slot)) {
                                 timeSlot.classList.add('reserved');
-                                // Find the original reservation that covers this 1-hour slot
+
                                 const reservedInfo = roomData.reservations.find(r => {
                                     const [rStartStr, rEndStr] = r.reservation_time_slot.split('-');
                                     let rStart = parseInt(rStartStr, 10);
                                     let rEnd = parseInt(rEndStr, 10);
                                     if (isNaN(rStart) || isNaN(rEnd)) return false;
-
-                                    // Handle edge cases for time parsing
-                                    if (rStart === 0 && rEnd === 0) rEnd = 1; // 00-00 is a 1-hour slot
-                                    else if (rEnd === 0) rEnd = 24; // 23-00 means 23-24
-
+                                    if (rStart === 0 && rEnd === 0) rEnd = 1;
+                                    else if (rEnd === 0) rEnd = 24;
                                     const [slotStart, slotEnd] = slot.split('-').map(Number);
-
-                                    // This logic now correctly finds the parent reservation for a given slot,
-                                    // even for parts of a reservation that span across midnight.
-                                    if (r.reservation_date === selectedDate) {
-                                        return slotStart >= rStart && slotEnd <= rEnd;
-                                    }
-                                    return false;
+                                    return r.reservation_date === selectedDate && slotStart >= rStart && slotEnd <= rEnd;
                                 });
 
-                                // This should always find an info if the slot is in `expandedReservedSlots`
                                 if (reservedInfo) {
                                     const reservationDate = new Date(reservedInfo.reservation_date);
                                     const actualDayOfWeek = weekdays[reservationDate.getDay()];
-
-                                    // 이전 날짜의 요일을 계산합니다.
                                     const selectedDateObj = new Date(selectedDate);
-                                    const previousDay = new Date(selectedDateObj);
-                                    previousDay.setDate(selectedDateObj.getDate() - 1);
-                                    const previousDayOfWeek = weekdays[previousDay.getDay()];
+                                    const selectedDayOfWeek = weekdays[selectedDateObj.getDay()];
 
-                                    // 현재 처리 중인 시간 슬롯의 시작 시간을 가져옵니다. (예: "12-13" -> 12)
-                                    const slotStartHour = parseInt(slot.split('-')[0], 10);
+                                    let isMismatch = reservedInfo.crawled_day_of_week && reservedInfo.crawled_day_of_week !== selectedDayOfWeek;
 
-                                    // 기본적으로 게시판의 요일과 실제 예약 날짜의 요일이 다르면 불일치로 판단합니다.
-                                    let isDayOfWeekMismatch = reservedInfo.crawled_day_of_week &&
-                                                              reservedInfo.crawled_day_of_week !== actualDayOfWeek;
+                                    if (isMismatch) {
+                                        const previousDay = new Date(selectedDateObj);
+                                        previousDay.setDate(selectedDateObj.getDate() - 1);
+                                        const previousDayOfWeek = weekdays[previousDay.getDay()];
+                                        const slotStartHour = parseInt(slot.split('-')[0], 10);
 
-                                    // **하지만, 예외적으로 아래의 경우는 정상으로 다시 변경합니다.**
-                                    // 1. 불일치(isDayOfWeekMismatch=true)로 판단되었고,
-                                    // 2. 예약 시간이 새벽 시간대(예: 6시 이전)이며,
-                                    // 3. 게시판 요일이 '전날 요일'과 일치하는 경우 (즉, 자정을 넘긴 정상 예약)
-                                    if (isDayOfWeekMismatch && slotStartHour < 6 && reservedInfo.crawled_day_of_week === previousDayOfWeek) {
-                                        isDayOfWeekMismatch = false; // 이것은 정상 예약이므로 불일치(노란색)가 아님
+                                        const isCrossMidnight = slotStartHour < 6 && reservedInfo.crawled_day_of_week === previousDayOfWeek;
+
+                                        if (isCrossMidnight) {
+                                            isMismatch = false;
+                                        }
                                     }
-                                    // --- FIX ENDS HERE ---
 
-                                    if (isDayOfWeekMismatch) {
+                                    if (isMismatch) {
                                         timeSlot.classList.add('day-mismatch');
-                                        timeSlot.dataset.tooltipText = '예약이 불가능합니다. (요일 불일치)';
+                                        timeSlot.dataset.tooltipText = '게시판의 요일과 제목의 날짜가 일치하지 않는 게시물일 가능성이 있습니다.';
                                     } else {
-                                        timeSlot.dataset.tooltipText = '예약이 불가능합니다.';
+                                        timeSlot.dataset.tooltipText = '예약 불가능';
                                     }
                                 } else {
-                                    // This case should ideally not be reached if logic is sound
                                     timeSlot.dataset.tooltipText = '예약 정보 오류';
                                 }
                             } else {
@@ -1045,3 +1012,24 @@
     </script>
 </body>
 </html>
+
+<style>
+    .custom-tooltip {
+        position: absolute;
+        background-color: #333;
+        color: #fff;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 14px;
+        z-index: 1000;
+        pointer-events: none;
+        opacity: 0;
+        transform: scale(0.9);
+        transition: opacity 0.15s ease, transform 0.15s ease;
+    }
+
+    .custom-tooltip.show {
+        opacity: 1;
+        transform: scale(1);
+    }
+</style>

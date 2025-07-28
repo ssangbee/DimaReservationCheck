@@ -73,7 +73,7 @@ def scrape_and_store_reservations(target_date_str, target_category):
     init_db()
     conn = sqlite3.connect(DATABASE_NAME)
     cursor = conn.cursor()
-    
+
     current_crawl_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     try:
@@ -112,7 +112,7 @@ def scrape_and_store_reservations(target_date_str, target_category):
                 if not url:
                     print(f"No URL configured for {current_day_of_week} {category}. Skipping.")
                     continue
-                
+
                 print(f"Attempting to scrape URL: {url} for category: {category} on {current_day_of_week} ({current_date_str})")
                 try:
                     response = requests.get(url)
@@ -122,13 +122,13 @@ def scrape_and_store_reservations(target_date_str, target_category):
                     continue
 
                 script_tags = BeautifulSoup(response.text, 'html.parser').find_all('script')
-                
+
                 found_articles_script = False
                 for script in script_tags:
                     script_content = script.string
                     if script_content and 'articles.push' in script_content:
                         found_articles_script = True
-                        
+
                         for article_data in re.findall(r'articles\.push\(\{(.*?)\}\);', script_content, re.DOTALL):
                             title_match = re.search(r'title:\s*"(.*?)"', article_data)
                             head_cont_match = re.search(r'headCont:\s*"(.*?)"', article_data)
@@ -153,7 +153,7 @@ def scrape_and_store_reservations(target_date_str, target_category):
                                 try:
                                     month, day = map(int, date_str_raw.split('.'))
                                     # Assuming the year is the current year for the reservation
-                                    reservation_start_date = datetime.date(datetime.datetime.now().year, month, day)
+                                    reservation_start_date = datetime.date(2025, month, day)
                                 except ValueError:
                                     print(f"Could not parse date {date_str_raw} from title {title_text}. Skipping.")
                                     continue
@@ -167,7 +167,7 @@ def scrape_and_store_reservations(target_date_str, target_category):
                                     if reservation_start_date.strftime('%Y-%m-%d') == target_date_str or reservation_start_date.strftime('%Y-%m-%d') == prev_date_str:
                                         extracted_data_part1 = {
                                             "category": category,
-                                            "room_name": final_room_name, 
+                                            "room_name": final_room_name,
                                             "student_id": student_id,
                                             "student_name": student_name,
                                             "reservation_date": reservation_start_date.strftime('%Y-%m-%d'),
@@ -200,7 +200,7 @@ def scrape_and_store_reservations(target_date_str, target_category):
                                         if next_day_date.strftime('%Y-%m-%d') == target_date_str or next_day_date.strftime('%Y-%m-%d') == prev_date_str:
                                             extracted_data_part2 = {
                                                 "category": category,
-                                                "room_name": final_room_name, 
+                                                "room_name": final_room_name,
                                                 "student_id": student_id,
                                                 "student_name": student_name,
                                                 "reservation_date": next_day_date.strftime('%Y-%m-%d'),
@@ -230,7 +230,7 @@ def scrape_and_store_reservations(target_date_str, target_category):
                                     if reservation_start_date.strftime('%Y-%m-%d') == target_date_str or reservation_start_date.strftime('%Y-%m-%d') == prev_date_str:
                                         extracted_data = {
                                             "category": category,
-                                            "room_name": final_room_name, 
+                                            "room_name": final_room_name,
                                             "student_id": student_id,
                                             "student_name": student_name,
                                             "reservation_date": reservation_start_date.strftime('%Y-%m-%d'),
@@ -270,12 +270,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Scrape Daum Cafe for practice room reservations.')
     parser.add_argument('date', type=str, help='The date for which to scrape reservations (YYYY-MM-DD).')
     parser.add_argument('category', type=str, help='The category to scrape (e.g., "일반 연습실", "스튜디오/랩/라운지", or "all").')
-    
+
     args = parser.parse_args()
 
     print(f"Starting data scraping and storage for date: {args.date}, category: {args.category}...")
     data = scrape_and_store_reservations(args.date, args.category)
-    
+
     if not data:
         print("No reservation data found or stored.")
     else:
